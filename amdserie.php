@@ -169,8 +169,6 @@ if (isset($_POST['addProduct'])) {
 		}
 		?>
 
-
-
 	</div>
 
 	<!--  

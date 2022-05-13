@@ -1,3 +1,33 @@
+<?php session_start();
+require_once 'config.php';
+
+
+$proco = $bdd->query("SELECT * FROM produits WHERE category = 25");
+
+$sql = $bdd->query("SELECT * FROM produits ORDER BY num_pro ");
+
+
+
+
+if (isset($_POST['addProduct'])) {
+	$verifExist = $bdd->prepare("SELECT * FROM panier WHERE id_cli = ? AND num_pro = ?");
+	$verifExist->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	$verifProduits = $verifExist->fetch();
+	$rowPanier = $verifExist->rowCount();
+	if ($rowPanier == 0) {
+		if (isset($_POST['num_pro'])) {
+			$ajout = $bdd->prepare("INSERT INTO panier(id_cli,num_pro, qte_pro) VALUES(?, ?, ?)");
+			$ajout->execute(array($_SESSION['userID'], $_POST['num_pro'], $_POST['quantite']));
+			//print $bdd->lastInsertId();
+		}
+	} else {
+		$newQte = $verifProduits['qte_pro'] += $_POST['quantite'];
+		$addQte = $bdd->prepare("UPDATE panier SET qte_pro = $newQte WHERE id_cli = ? AND num_pro = ?");
+		$addQte->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	}
+}
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -83,8 +113,6 @@
 							</div>
 						</div>
 						<?php
-									session_start();
-
 									if(empty($_SESSION['userName'])) {
 										echo "
 										<div class=\"connect\"><a href=\"signUp.php\">Sign Up</a></div>
@@ -108,49 +136,36 @@
 		</nav>
 	</header>
     	<div class="row">
-						  <div class="column">
-						   	<img src="img/periph/steelsouris.png">
-						    <div class="card">
-						      <h3>SteelSeries Rival 3 Wireless (noir)</h3>
-						      <br>
-						      <p>Possédant une redoutable efficacité, la SteelSeries Rival 3 Wireless embarque un capteur optique de 18 000 dpi, 6 boutons programmables et un rétro-éclairage RGB personnalisable. Parfaitement adaptée pour une utilisation intensive, cette souris sans fil possède une autonomie longue durée.</p>
-						      <h1 class="price">59€<sup class="cent">96</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+		<?php
+				while ($row = $proco->fetch()) {
+				?>
 
-						  <div class="column">
-						   	<img src="img/periph/corsairsouris.png">
-						    <div class="card">
-						      <h3>Corsair Gaming Harpoon RGB Wireless</h3>
-						      <br>
-						      <p>Prenez l'ascendant à l'aide de la souris Corsair Gaming Harpoon RGB Wireless. Ce modèle optique dispose d'une résolution de 10 000 DPI, de 6 boutons programmables, d'un rétroéclairage multicolore et d'un fonctionnement avec ou sans fil avec un poids plume de seulement 99 grammes.</p>
-						      <h1 class="price">69€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-
-						   <div class="column">
-						   	<img src="img/periph/logitechsouris.png">
-						    <div class="card">
-						      <h3>Logitech G Pro HERO</h3>
-						      <br>
-						      <p>Profitez d'une vitesse et une précision exceptionnelles avec la souris Logitech G Pro HERO. Spécialement conçue pour l'eSport, elle intègre un capteur optique Hero de 16 000 dpi pour que chaque mouvement puisse faire mouche.</p>
-						      <h1 class="price">79€<sup class="cent">94</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-
-						  <div class="column">
-						  	<img src="img/periph/razersouris.png">
-						    <div class="card">
-						      <h3>Razer Deathadder v2</h3>
-						      <br>
-						      <p>Avec la souris Razer DeathAdder v2, offrez-vous une arme redoutable pour venir à bout des plus coriaces adversaires. En effet, elle intègre un capteur optique Razer Focus+ de 20000 dpi afin de vous offrir une précision inégalée.
-						      </p>
-						      <h1 class="price">84€<sup class="cent">94</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-						  
+					<div class="column">
+						<img src="<?= $row['imgsource']; ?>">
+						<div class="card">
+							<h1><?= $row['marques_pro']; ?></h1>
+							<p><?= $row['description']; ?></p>
+							<h1><?= $row['prix_pro']; ?>€</h1><br>
 
 
+							<?php
+							if (isset($_SESSION['userName'])) {
+							?>
+								<form method="POST" action="mouse.php">
+									<input type="hidden" name="num_pro" value="<?= $row['num_pro']; ?>">
+									<div class="boxBtnForPanier">
+										<p><button type="submit" class="btnbasket" name="addProduct">Ajouter au panier</button></p>
+										<input type="number" value="1" name="quantite" min="1" max="999" size="2" class="btnQte">
+									</div>
+								</form>
+							<?php
+							} else echo '<a href="connect.php"><button type="button">Ajouter au panier</button></a>';
+							?>
+						</div>
+					</div>
+				<?php
+				}
+				?>
 
 			</div>
 <!--

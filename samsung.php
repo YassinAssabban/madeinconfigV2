@@ -1,3 +1,33 @@
+<?php session_start();
+require_once 'config.php';
+
+
+$proco = $bdd->query("SELECT * FROM produits WHERE category = 14");
+
+$sql = $bdd->query("SELECT * FROM produits ORDER BY num_pro ");
+
+
+
+
+if (isset($_POST['addProduct'])) {
+	$verifExist = $bdd->prepare("SELECT * FROM panier WHERE id_cli = ? AND num_pro = ?");
+	$verifExist->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	$verifProduits = $verifExist->fetch();
+	$rowPanier = $verifExist->rowCount();
+	if ($rowPanier == 0) {
+		if (isset($_POST['num_pro'])) {
+			$ajout = $bdd->prepare("INSERT INTO panier(id_cli,num_pro, qte_pro) VALUES(?, ?, ?)");
+			$ajout->execute(array($_SESSION['userID'], $_POST['num_pro'], $_POST['quantite']));
+			//print $bdd->lastInsertId();
+		}
+	} else {
+		$newQte = $verifProduits['qte_pro'] += $_POST['quantite'];
+		$addQte = $bdd->prepare("UPDATE panier SET qte_pro = $newQte WHERE id_cli = ? AND num_pro = ?");
+		$addQte->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	}
+}
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -84,7 +114,6 @@
 							</div>
 						</div>
 						<?php
-									session_start();
 
 									if(empty($_SESSION['userName'])) {
 										echo "
@@ -110,48 +139,36 @@
 	</header>
 				
 				<div class="row">
-						  
-						  <div class="column">
-						  	<img src="img/ssd/970evo.png">
-						    <div class="card">
-						      <h3>Samsung SSD 970 EVO Plus M.2 PCIe NVMe 250 Go</h3>
-						      <br>
-						      <p>Le Samsung 970 EVO Plus M.2 PCIe 3.0 4x NVMe 1.3 dans sa version 250 Go transporte votre PC dans un autre niveau de performances grâce à ses vitesses pouvant atteindre 3.5 Go/s en lecture et 2.3 Go/s en écriture et propose un cache LPDDR4 de 512 Mo.
-						      </p>
-						      <h1 class="price">84€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+				<?php
+				while ($row = $proco->fetch()) {
+				?>
 
-						   <div class="column">
-						   	<img src="img/ssd/980pro.png">
-						    <div class="card">
-						      <h3>Samsung SSD 980 PRO M.2 PCIe NVMe 500 Go</h3>
-						      <p>Le disque SSD 980 PRO 500 Go de Samsung permet de métamorphoser les performances et la réactivité de votre machine. Bénéficiant de vitesses stratosphériques et d'une endurance très élevée, le Samsung 980 PRO s'appuie sur l'interface PCI-E 4.0 x4 ainsi que sur la technologie NVMe 1.3c.</p>
-						      <h1 class="price">189€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-						<div class="column">
-						  	<img src="img/ssd/860pro.png">
-						    <div class="card">
-						      <h3>Samsung SSD 860 PRO 1 To</h3>
-						      <br>
-						      <p>Alimenté par la technologie V-NAND et un contrôleur basé sur un algorithme solide, le SSD 860 PRO est spécialement conçu pour supporter les lourdes charges de travail que peuvent connaître les ordinateurs haut de gamme, les postes de travail et les NAS (serveur de stockage en réseau).</p>
-						     <h1 class="price">329€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-
-						 <div class="column">
-						  	<img src="img/ssd/870qvo.png">
-						    <div class="card">
-						      <h3>Samsung SSD 870 QVO 2 To</h3>
-						      <br>
-						      <p>Grande fiabilité, capacité de stockage de 1 à 8 To, vitesses supérieures, le disque SSD 870 QVO signé Samsung affirme son potentiel une fois installé dans votre ordinateur ! Porté par la technologie V-NAND et le contrôleur MKX basé sur l'algorithme ECC, ce modèle se montre fiable et performant.
-						      </p>
-						      <h1 class="price">289€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+					<div class="column">
+						<img src="<?= $row['imgsource']; ?>">
+						<div class="card">
+							<h1><?= $row['marques_pro']; ?></h1>
+							<p><?= $row['description']; ?></p>
+							<h1><?= $row['prix_pro']; ?>€</h1><br>
 
 
+							<?php
+							if (isset($_SESSION['userName'])) {
+							?>
+								<form method="POST" action="samsung.php">
+									<input type="hidden" name="num_pro" value="<?= $row['num_pro']; ?>">
+									<div class="boxBtnForPanier">
+										<p><button type="submit" class="btnbasket" name="addProduct">Ajouter au panier</button></p>
+										<input type="number" value="1" name="quantite" min="1" max="999" size="2" class="btnQte">
+									</div>
+								</form>
+							<?php
+							} else echo '<a href="connect.php"><button type="button">Ajouter au panier</button></a>';
+							?>
+						</div>
+					</div>
+				<?php
+				}
+				?>
 			</div>
 <!-- 
 	https://www.ldlc.com/fr-be/fiche/PB00265389.php

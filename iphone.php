@@ -1,3 +1,33 @@
+<?php session_start();
+require_once 'config.php';
+
+
+$proco = $bdd->query("SELECT * FROM produits WHERE category = 28");
+
+$sql = $bdd->query("SELECT * FROM produits ORDER BY num_pro ");
+
+
+
+
+if (isset($_POST['addProduct'])) {
+	$verifExist = $bdd->prepare("SELECT * FROM panier WHERE id_cli = ? AND num_pro = ?");
+	$verifExist->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	$verifProduits = $verifExist->fetch();
+	$rowPanier = $verifExist->rowCount();
+	if ($rowPanier == 0) {
+		if (isset($_POST['num_pro'])) {
+			$ajout = $bdd->prepare("INSERT INTO panier(id_cli,num_pro, qte_pro) VALUES(?, ?, ?)");
+			$ajout->execute(array($_SESSION['userID'], $_POST['num_pro'], $_POST['quantite']));
+			//print $bdd->lastInsertId();
+		}
+	} else {
+		$newQte = $verifProduits['qte_pro'] += $_POST['quantite'];
+		$addQte = $bdd->prepare("UPDATE panier SET qte_pro = $newQte WHERE id_cli = ? AND num_pro = ?");
+		$addQte->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	}
+}
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -83,7 +113,6 @@
 							</div>
 						</div>
 						<?php
-									session_start();
 
 									if(empty($_SESSION['userName'])) {
 										echo "
@@ -108,49 +137,36 @@
 		</nav>
 	</header>
     	<div class="row">
-						  
-						  <div class="column">
-						  	<img src="img/apple/11.png">
-						    <div class="card">
-						      <h3>Apple iPhone 11 64 Go Noir</h3>
-						      <br>
-						      <p>Conçu pour élargir vos horizons, l'iPhone 11 d'Apple vous séduira en un rien de temps. Arborant des matériaux de haute qualité, il vous en mettra plein les yeux grâce à son magnifique écran Liquid Retina HD de 6.1 pouces à résolution 828 x 1792 pixels.
-						      </p>
-						      <h1 class="price">689€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+		<?php
+				while ($row = $proco->fetch()) {
+				?>
 
-						   <div class="column">
-						   	<img src="img/apple/12mini.png">
-						    <div class="card">
-						      <h3>Apple iPhone 12 mini 64 Go Noir</h3>
-						      <br>
-						      <p>L'iPhone 12 mini repousse toutes les limites du possible avec la connectivité 5G ultra-rapide. La puce A14 Bionic, la plus rapide sur smartphone. Un nouveau double appareil photo. Et un magnifique écran Super Retina XDR, pour ne pas passer à côté du moindre détail.</p>
-						      <h1 class="price">809€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-						  
-						  <div class="column">
-						   	<img src="img/apple/11pro.png">
-						    <div class="card">
-						      <h3>Apple iPhone 11 Pro 64 Go Gris Sidéral</h3>
-						      <br>
-						      <p>Premier iPhone à décrocher l'appellation Pro, l'Apple iPhone Pro va vous en mettre plein les yeux. Avec sa finition exceptionnelle et son design en verre et acier inoxydable, il vous laissera sans voix. Pour cela, il peut s'appuyer sur son magnifique écran OLED Super Retina XDR de 5.8 pouces.</p>
-						      <h1 class="price">1 059€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-
-						  <div class="column">
-						   	<img src="img/apple/12promax.png">
-						    <div class="card">
-						      <h3>Apple iPhone 12 Pro Max 128 Go Graphite</h3>
-						      <br>
-						      <p>iPhone 12 Pro Max. Avec la 5G ultra-rapide. La puce A14 Bionic, la plus rapide sur smartphone. Et un système photo pro qui révolutionne la prise de vues en conditions de faible éclairage. C'est un bond en avant incroyable.</p>
-						      <h1 class="price">1 259€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+					<div class="column">
+						<img src="<?= $row['imgsource']; ?>">
+						<div class="card">
+							<h1><?= $row['marques_pro']; ?></h1>
+							<p><?= $row['description']; ?></p>
+							<h1><?= $row['prix_pro']; ?>€</h1><br>
 
 
+							<?php
+							if (isset($_SESSION['userName'])) {
+							?>
+								<form method="POST" action="iphone.php">
+									<input type="hidden" name="num_pro" value="<?= $row['num_pro']; ?>">
+									<div class="boxBtnForPanier">
+										<p><button type="submit" class="btnbasket" name="addProduct">Ajouter au panier</button></p>
+										<input type="number" value="1" name="quantite" min="1" max="999" size="2" class="btnQte">
+									</div>
+								</form>
+							<?php
+							} else echo '<a href="connect.php"><button type="button">Ajouter au panier</button></a>';
+							?>
+						</div>
+					</div>
+				<?php
+				}
+				?>
 
 			</div>
 <!--

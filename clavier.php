@@ -1,3 +1,33 @@
+<?php session_start();
+require_once 'config.php';
+
+
+$proco = $bdd->query("SELECT * FROM produits WHERE category = 24");
+
+$sql = $bdd->query("SELECT * FROM produits ORDER BY num_pro ");
+
+
+
+
+if (isset($_POST['addProduct'])) {
+	$verifExist = $bdd->prepare("SELECT * FROM panier WHERE id_cli = ? AND num_pro = ?");
+	$verifExist->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	$verifProduits = $verifExist->fetch();
+	$rowPanier = $verifExist->rowCount();
+	if ($rowPanier == 0) {
+		if (isset($_POST['num_pro'])) {
+			$ajout = $bdd->prepare("INSERT INTO panier(id_cli,num_pro, qte_pro) VALUES(?, ?, ?)");
+			$ajout->execute(array($_SESSION['userID'], $_POST['num_pro'], $_POST['quantite']));
+			//print $bdd->lastInsertId();
+		}
+	} else {
+		$newQte = $verifProduits['qte_pro'] += $_POST['quantite'];
+		$addQte = $bdd->prepare("UPDATE panier SET qte_pro = $newQte WHERE id_cli = ? AND num_pro = ?");
+		$addQte->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	}
+}
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -25,7 +55,7 @@
 							<div class="dropdown-content">
 								    <div class="header">
 								        <h2>Composants</h2>
-								    </div>   
+								    </div>
 								<div class="row-nav">
 									<div class="column-nav">
 								 		<h3>Composants PC</h3>
@@ -83,7 +113,6 @@
 							</div>
 						</div>
 						<?php
-									session_start();
 
 									if(empty($_SESSION['userName'])) {
 										echo "
@@ -108,50 +137,36 @@
 		</nav>
 	</header>
     	<div class="row">
-						  <div class="column">
-						   	<img src="img/periph/razerclavier.png">
-						    <div class="card">
-						      <h3>Razer BlackWidow V3 TKL (switches Razer Green)</h3>
-						      <br>
-						      <p>Conçu spécifiquement pour le jeu, le Razer BlackWidow V3 TKL est un clavier compact armé de switches Razer Green afin de vous offrir une exécution précise avec une sensation tactile. Prenez ainsi facilement le dessus sur vos adversaires lors de duels.</p>
-						      <h1 class="price">111€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+		<?php
+				while ($row = $proco->fetch()) {
+				?>
 
-						  <div class="column">
-						   	<img src="img/periph/logitechclavier.png">
-						    <div class="card">
-						      <h3> Logitech G Pro</h3>
-						      <br>
-						      <p>Foncez vers la victoire avec ce clavier Logitech G Pro. Au format TKL (sans pavé numérique), il est spécialement adapté pour les tournois et les parties endiablées. Ce clavier gaming est équipé des switches mécaniques tactiles avancés GX Blue pour un retour audible et tactile.</p>
-						      <h1 class="price">129€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-
-						   <div class="column">
-						   	<img src="img/periph/corsairclavier.png">
-						    <div class="card">
-						      <h3>Corsair Gaming K70 RGB MK.2 (Cherry MX Red)</h3>
-						      <br>
-						      <p>Imposez votre style sur les jeux PC grâce à toutes les qualités du clavier gamer Corsair Gaming K70 RGB MK.2. Ce modèle est doté d'un rétro-éclairage multicolore pour un style unique et de switches Cherry MX Red pour un jeu rapide et fluide.</p>
-						      <h1 class="price">199€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-
-						  <div class="column">
-						  	<img src="img/periph/steelclavier.png">
-						    <div class="card">
-						      <h3>SteelSeries Apex Pro</h3>
-						      <br>
-						      <p>Véritable bond en avant, le clavier SteelSeries Apex Pro vous permet de régler chaque touche en fonction de votre niveau de sensibilité préféré, que ce soit pour le gaming, le travail ou autre chose. Plus rapide et résistant que jamais, il sera l'arme ultime pour remporter des victoires.
-						      </p>
-						      <h1 class="price">259€<sup class="cent">94</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-						  
+					<div class="column">
+						<img src="<?= $row['imgsource']; ?>">
+						<div class="card">
+							<h1><?= $row['marques_pro']; ?></h1>
+							<p><?= $row['description']; ?></p>
+							<h1><?= $row['prix_pro']; ?>€</h1><br>
 
 
-
+							<?php
+							if (isset($_SESSION['userName'])) {
+							?>
+								<form method="POST" action="clavier.php">
+									<input type="hidden" name="num_pro" value="<?= $row['num_pro']; ?>">
+									<div class="boxBtnForPanier">
+										<p><button type="submit" class="btnbasket" name="addProduct">Ajouter au panier</button></p>
+										<input type="number" value="1" name="quantite" min="1" max="999" size="2" class="btnQte">
+									</div>
+								</form>
+							<?php
+							} else echo '<a href="connect.php"><button type="button">Ajouter au panier</button></a>';
+							?>
+						</div>
+					</div>
+				<?php
+				}
+				?>
 			</div>
 <!--
 	https://www.ldlc.com/fr-be/fiche/PB00377248.php

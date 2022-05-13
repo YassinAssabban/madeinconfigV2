@@ -42,8 +42,7 @@ if (isset($_POST['suppProduit'])) {
     <table>
         <tr>
             <td colspan="3">
-                <h2>Panier d'achat de <?php $sess = $_SESSION['userName'];
-                                        echo $sess; ?></h2>
+                <h2>Panier d'achat de <?php $sess = $_SESSION['userName']; echo $sess; ?></h2>
             </td>
         </tr>
         <tr>
@@ -69,10 +68,11 @@ if (isset($_POST['suppProduit'])) {
             $fetchRequetePanier = $requetePanier->fetch();
 
             $prixTotalParProduit = $fetchRequeteProduit['prix_pro'] * $fetchRequetePanier['qte_pro'];
-            $prixTotalParProduitFormat = number_format($prixTotalParProduit, 2, ".");
+            $prixTotalParProduitFormat = number_format($prixTotalParProduit, 2);
 
-            
-            $total += $prixTotalParProduitFormat;
+
+            $total = $total + $prixTotalParProduitFormat;
+            $totalFormat = number_format($total, 2);
         ?>
             <tr>
                 <form method="POST" action="panier.php">
@@ -81,7 +81,7 @@ if (isset($_POST['suppProduit'])) {
                 <td><?= $infoProduits['marques_pro']; ?></td>
                 <td><?= $row['qte_pro']; ?></td>
                 <td><?= $infoProduits['prix_pro']; ?>€</td>
-                <td><?=  $prixTotalParProduitFormat ?></td>
+                <td><?=  $prixTotalParProduitFormat; ?>€</td>
             </tr>
         <?php
         }
@@ -90,7 +90,7 @@ if (isset($_POST['suppProduit'])) {
             <td colspan="4" class="borderGreenTop">
                 <h3>Total :</h3>
             </td>
-            <td class="borderGreenTop"><span class="price" style="color:black"><b> <?= $total ?>€</b></span></td>
+            <td class="borderGreenTop"><span class="price" style="color:black"><b><?= $totalFormat ?>€</b></span></td>
         </tr>
     </table>
 

@@ -1,3 +1,33 @@
+<?php session_start();
+require_once 'config.php';
+
+
+$proco = $bdd->query("SELECT * FROM produits WHERE category = 17");
+
+$sql = $bdd->query("SELECT * FROM produits ORDER BY num_pro ");
+
+
+
+
+if (isset($_POST['addProduct'])) {
+	$verifExist = $bdd->prepare("SELECT * FROM panier WHERE id_cli = ? AND num_pro = ?");
+	$verifExist->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	$verifProduits = $verifExist->fetch();
+	$rowPanier = $verifExist->rowCount();
+	if ($rowPanier == 0) {
+		if (isset($_POST['num_pro'])) {
+			$ajout = $bdd->prepare("INSERT INTO panier(id_cli,num_pro, qte_pro) VALUES(?, ?, ?)");
+			$ajout->execute(array($_SESSION['userID'], $_POST['num_pro'], $_POST['quantite']));
+			//print $bdd->lastInsertId();
+		}
+	} else {
+		$newQte = $verifProduits['qte_pro'] += $_POST['quantite'];
+		$addQte = $bdd->prepare("UPDATE panier SET qte_pro = $newQte WHERE id_cli = ? AND num_pro = ?");
+		$addQte->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	}
+}
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -83,7 +113,6 @@
 							</div>
 						</div>
 						<?php
-									session_start();
 
 									if(empty($_SESSION['userName'])) {
 										echo "
@@ -109,48 +138,36 @@
 	</header>
 				
 				<div class="row">
-						  
-						  <div class="column">
-						  	<img src="img/dd/blue.png">
-						    <div class="card">
-						      <h3>Western Digital WD Blue 1 To SATA 6Gb/s 64 Mo</h3>
-						      <br>
-						      <p>Augmentez la capacité de stockage de votre PC grâce aux disques durs WD Blue, une gamme conçue spécialement pour les PC de bureau et les PC tout-en-un. La famille WD Blue offre désormais une capacité de stockage allant jusqu'à 6 To.
-						      </p>
-						      <h1 class="price">47€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+				<?php
+				while ($row = $proco->fetch()) {
+				?>
 
-						   <div class="column">
-						   	<img src="img/dd/purple.png">
-						    <div class="card">
-						      <h3>Western Digital WD Purple Surveillance Hard Drive 1 To SATA 6Gb/s</h3>
-						      <p>Les disques durs conçus pour la vidéosurveillance WD Purple offrent la technologie exclusive AllFrame pour vous apporter la meilleure fiabilité possible et plus de tranquillité d'esprit en installant le système de sécurité de votre maison ou de votre PME.</p>
-						      <h1 class="price">54€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-						<div class="column">
-						  	<img src="img/dd/red.png">
-						    <div class="card">
-						      <h3>Western Digital WD Red 1 To SATA 6Gb/s</h3>
-						      <br>
-						      <p>Les disques durs WD Red offrent un large éventail de solutions pour les clients désireux de mettre en place un stockage NAS performant. Conçus pour les systèmes NAS comptant de 1 à 8 baies, les disques WD Red permettent de stocker la totalité de précieuses données.</p>
-						     <h1 class="price">77€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-
-						 <div class="column">
-						  	<img src="img/dd/black.png">
-						    <div class="card">
-						      <h3>Western Digital WD Black Mobile 1 To</h3>
-						      <br>
-						      <p>Conçus pour les PC portables haut de gamme, le disque dur WD Black Mobile ultra performant associe capacité et vitesse afin de booster le PC sans remettre en question l'autonomie sur batterie ou le confort acoustique.
-						      </p>
-						      <h1 class="price">79€<sup class="cent">94</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+					<div class="column">
+						<img src="<?= $row['imgsource']; ?>">
+						<div class="card">
+							<h1><?= $row['marques_pro']; ?></h1>
+							<p><?= $row['description']; ?></p>
+							<h1><?= $row['prix_pro']; ?>€</h1><br>
 
 
+							<?php
+							if (isset($_SESSION['userName'])) {
+							?>
+								<form method="POST" action="wd.php">
+									<input type="hidden" name="num_pro" value="<?= $row['num_pro']; ?>">
+									<div class="boxBtnForPanier">
+										<p><button type="submit" class="btnbasket" name="addProduct">Ajouter au panier</button></p>
+										<input type="number" value="1" name="quantite" min="1" max="999" size="2" class="btnQte">
+									</div>
+								</form>
+							<?php
+							} else echo '<a href="connect.php"><button type="button">Ajouter au panier</button></a>';
+							?>
+						</div>
+					</div>
+				<?php
+				}
+				?>
 			</div>
 <!-- 
 	https://www.ldlc.com/fr-be/fiche/PB00199914.php

@@ -1,3 +1,33 @@
+<?php session_start();
+require_once 'config.php';
+
+
+$proco = $bdd->query("SELECT * FROM produits WHERE category = 27");
+
+$sql = $bdd->query("SELECT * FROM produits ORDER BY num_pro ");
+
+
+
+
+if (isset($_POST['addProduct'])) {
+	$verifExist = $bdd->prepare("SELECT * FROM panier WHERE id_cli = ? AND num_pro = ?");
+	$verifExist->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	$verifProduits = $verifExist->fetch();
+	$rowPanier = $verifExist->rowCount();
+	if ($rowPanier == 0) {
+		if (isset($_POST['num_pro'])) {
+			$ajout = $bdd->prepare("INSERT INTO panier(id_cli,num_pro, qte_pro) VALUES(?, ?, ?)");
+			$ajout->execute(array($_SESSION['userID'], $_POST['num_pro'], $_POST['quantite']));
+			//print $bdd->lastInsertId();
+		}
+	} else {
+		$newQte = $verifProduits['qte_pro'] += $_POST['quantite'];
+		$addQte = $bdd->prepare("UPDATE panier SET qte_pro = $newQte WHERE id_cli = ? AND num_pro = ?");
+		$addQte->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	}
+}
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -83,7 +113,6 @@
 							</div>
 						</div>
 						<?php
-									session_start();
 
 									if(empty($_SESSION['userName'])) {
 										echo "
@@ -108,49 +137,36 @@
 		</nav>
 	</header>
     	<div class="row">
-						  
-						  <div class="column">
-						  	<img src="img/apple/mini.png">
-						    <div class="card">
-						      <h3>Apple iPad mini 5 Wi-Fi + Cellular 256 Go Gris Sidéral</h3>
-						      <br>
-						      <p>Séduisant par son côté mini, surprenant par ses performances, l'iPad mini 5 est plus que jamais à son maximum ! Tout en finesse et en légèreté, il trouve naturellement sa place dans votre quotidien. A la maison comme en déplacement, sa puce A12 Bionic et son écran Retina 7.9" font merveille.
-						      </p>
-						      <h1 class="price">769€<sup class="cent">94</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+		<?php
+				while ($row = $proco->fetch()) {
+				?>
 
-						   <div class="column">
-						   	<img src="img/apple/ipadair.png">
-						    <div class="card">
-						      <h3>Apple iPad Air (2020) Wi-Fi + Cellular 64 Go Gris Sidéral</h3>
-						      <br>
-						      <p>Le nouvel iPad Air est plus polyvalent que jamais. Grâce à son superbe écran Liquid Retina de 10,9 pouces avec large gamme de couleurs, vos photos, vidéos et jeux vidéo affichent un niveau de détails saisissant de réalisme.</p>
-						      <h1 class="price">809€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-						  
-						  <div class="column">
-						   	<img src="img/apple/pro20.png">
-						    <div class="card">
-						      <h3>Apple iPad Pro (2020) 11 pouces 256 Go Wi-Fi + Cellular Gris Sidéral</h3>
-						      <br>
-						      <p>Le nouvel iPad Pro signé Apple possède un écran Liquid Retina 120 Hz, une puce A12Z Bionic, un chipstet graphique 8 coeurs et trois capteurs photo (2 à l'arrière + 1 à l'avant). Porté par iPadOS, il se dote également du Wi-Fi 6, des données 4G-LTE Advanced, Bluetooth 5.0, 9h d'autonomie et l'USB-C.</p>
-						      <h1 class="price">1 179€<sup class="cent">96</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-
-						  <div class="column">
-						   	<img src="img/apple/pro18.png">
-						    <div class="card">
-						      <h3>Apple iPad Pro (2018) 11 pouces 1 To Wi-Fi Argent</h3>
-						      <br>
-						      <p>Et si votre prochain ordinateur était finalement un iPad Pro ? Laissez-vous séduire par la puissance, les fonctionnalités, le design et les innovations de l'Apple iPad Pro 2018, surprenant à bien des égards et capable de vous faire oublier votre ordinateur.</p>
-						      <h1 class="price">1 499€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+					<div class="column">
+						<img src="<?= $row['imgsource']; ?>">
+						<div class="card">
+							<h1><?= $row['marques_pro']; ?></h1>
+							<p><?= $row['description']; ?></p>
+							<h1><?= $row['prix_pro']; ?>€</h1><br>
 
 
+							<?php
+							if (isset($_SESSION['userName'])) {
+							?>
+								<form method="POST" action="ipad.php">
+									<input type="hidden" name="num_pro" value="<?= $row['num_pro']; ?>">
+									<div class="boxBtnForPanier">
+										<p><button type="submit" class="btnbasket" name="addProduct">Ajouter au panier</button></p>
+										<input type="number" value="1" name="quantite" min="1" max="999" size="2" class="btnQte">
+									</div>
+								</form>
+							<?php
+							} else echo '<a href="connect.php"><button type="button">Ajouter au panier</button></a>';
+							?>
+						</div>
+					</div>
+				<?php
+				}
+				?>
 
 			</div>
 <!--

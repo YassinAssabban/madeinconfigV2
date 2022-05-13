@@ -1,3 +1,34 @@
+<?php 
+session_start();
+require_once 'config.php';
+
+
+$proco = $bdd->query("SELECT * FROM produits WHERE category = 5");
+
+$sql = $bdd->query("SELECT * FROM produits ORDER BY num_pro ");
+
+
+
+
+if (isset($_POST['addProduct'])) {
+	$verifExist = $bdd->prepare("SELECT * FROM panier WHERE id_cli = ? AND num_pro = ?");
+	$verifExist->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	$verifProduits = $verifExist->fetch();
+	$rowPanier = $verifExist->rowCount();
+	if ($rowPanier == 0) {
+		if (isset($_POST['num_pro'])) {
+			$ajout = $bdd->prepare("INSERT INTO panier(id_cli,num_pro, qte_pro) VALUES(?, ?, ?)");
+			$ajout->execute(array($_SESSION['userID'], $_POST['num_pro'], $_POST['quantite']));
+			//print $bdd->lastInsertId();
+		}
+	} else {
+		$newQte = $verifProduits['qte_pro'] += $_POST['quantite'];
+		$addQte = $bdd->prepare("UPDATE panier SET qte_pro = $newQte WHERE id_cli = ? AND num_pro = ?");
+		$addQte->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	}
+}
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -83,7 +114,6 @@
 							</div>
 						</div>
 						<?php
-									session_start();
 
 									if(empty($_SESSION['userName'])) {
 										echo "
@@ -108,46 +138,37 @@
 		</nav>
 	</header>
 				<div class="row">
-						  <div class="column">
-						  	<img src="img/kitevo/R5ASUSPRIME.png">
-						    <div class="card">
-						      <h3>Kit Upgrade PC AMD Ryzen 5 3600 ASUS PRIME B550M-A (Wi-Fi)</h3>
-						      <br>
-						      <p>L'association de la carte mère PRIME B550M-A Wi-Fi et du processeur AMD Ryzen 5 3600 avec son ventirad Wraith Stealth vous permettra de plonger dans l'univers envoûtant du jeu nouvelle génération sur PC.
-						      </p>
-						      <h1 class="price">395€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-					
-						   <div class="column">
-						   	<img src="img/kitevo/R7ASUSTUF.png">
-						    <div class="card">
-						      <h3>Kit Upgrade PC AMD Ryzen 7 2700X ASUS TUF B450-PLUS GAMING</h3>
-						      <br>
-						      <p>L'association de la carte mère ASUS TUF B450-PLUS GAMING et du processeur AMD Ryzen 7 2700X 8-Core vous permettra de plonger dans l'univers envoûtant du Jeu nouvelle génération sur PC.</p>
-						      <h1 class="price">349€<sup class="cent">94</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-						  
-						  <div class="column">
-						   	<img src="img/kitevo/I5FASUSPRIME.png">
-						    <div class="card">
-						      <h3>Kit Upgrade PC Core i5F ASUS PRIME Z490-P</h3>
-						      <br>
-						      <p>Améliorez les performances de votre PC Gamer avec ce kit upgrade PC Core i5F ASUS PRIME Z490-P pensé par LDLC. Il est composé d'une carte mère ASUS PRIME Z490-P et d'un CPU 10e génération Intel Core i5-10400F (2.9 GHz / 4.3 GHz).</p>
-						      <h1 class="price">379€<sup class="cent">94</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+				<?php
+				while ($row = $proco->fetch()) {
+				?>
 
-						  <div class="column">
-						   	<img src="img/kitevo/I7ASUSTUF.png">
-						    <div class="card">
-						      <h3>Kit Upgrade PC Core i7K ASUS TUF GAMING Z490-PLUS</h3>
-						      <br>
-						      <p>Améliorez les performances de votre PC Gamer avec ce kit upgrade PC Core i7K ASUS TUF GAMING Z490-PLUS pensé par LDLC. Il est composé d'une carte mère ASUS TUF GAMING Z490-PLUS et d'un CPU 10e génération Intel Core i7-10700K (3.8 GHz/5.1 GHz).</p>
-						      <h1 class="price">679€<sup class="cent">94</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+					<div class="column">
+						<img src="<?= $row['imgsource']; ?>">
+						<div class="card">
+							<h1><?= $row['marques_pro']; ?></h1>
+							<p><?= $row['description']; ?></p>
+							<h1><?= $row['prix_pro']; ?>€</h1><br>
+
+
+							<?php
+							if (isset($_SESSION['userName'])) {
+							?>
+								<form method="POST" action="asuskitevo.php">
+									<input type="hidden" name="num_pro" value="<?= $row['num_pro']; ?>">
+									<div class="boxBtnForPanier">
+										<p><button type="submit" class="btnbasket" name="addProduct">Ajouter au panier</button></p>
+										<input type="number" value="1" name="quantite" min="1" max="999" size="2" class="btnQte">
+									</div>
+								</form>
+							<?php
+							} else echo '<a href="connect.php"><button type="button">Ajouter au panier</button></a>';
+							?>
+						</div>
+					</div>
+				<?php
+				}
+				?>
+
 
 
 

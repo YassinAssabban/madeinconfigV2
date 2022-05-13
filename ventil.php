@@ -1,3 +1,33 @@
+<?php session_start();
+require_once 'config.php';
+
+
+$proco = $bdd->query("SELECT * FROM produits WHERE category = 18");
+
+$sql = $bdd->query("SELECT * FROM produits ORDER BY num_pro ");
+
+
+
+
+if (isset($_POST['addProduct'])) {
+	$verifExist = $bdd->prepare("SELECT * FROM panier WHERE id_cli = ? AND num_pro = ?");
+	$verifExist->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	$verifProduits = $verifExist->fetch();
+	$rowPanier = $verifExist->rowCount();
+	if ($rowPanier == 0) {
+		if (isset($_POST['num_pro'])) {
+			$ajout = $bdd->prepare("INSERT INTO panier(id_cli,num_pro, qte_pro) VALUES(?, ?, ?)");
+			$ajout->execute(array($_SESSION['userID'], $_POST['num_pro'], $_POST['quantite']));
+			//print $bdd->lastInsertId();
+		}
+	} else {
+		$newQte = $verifProduits['qte_pro'] += $_POST['quantite'];
+		$addQte = $bdd->prepare("UPDATE panier SET qte_pro = $newQte WHERE id_cli = ? AND num_pro = ?");
+		$addQte->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	}
+}
+
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -83,7 +113,6 @@
 							</div>
 						</div>
 						<?php
-									session_start();
 
 									if(empty($_SESSION['userName'])) {
 										echo "
@@ -109,44 +138,36 @@
 	</header>
 
 					<div class="row">
-						  <div class="column">
-						   	<img src="img/refroid/wings.png">
-						    <div class="card">
-						      <h3>be quiet! Pure Wings 2 120mm</h3>
-						      <p>Les modèles Pure Wings 2 sont les dignes descendants des Silents Wings et Shadow Wings, maintes fois récompensés par la presse. De nombreuses améliorations ont été portées à la gamme pour parvenir à l'objectif ultime d'allier performances et silence d'or.</p>
-						      <h1 class="price">11€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+					<?php
+				while ($row = $proco->fetch()) {
+				?>
 
-						  <div class="column">
-						   	<img src="img/refroid/nzxt.png">
-						    <div class="card">
-						      <h3>NZXT Aer RGB 2 140 mm</h3>
-						      <p>Les ventilateurs NZXT Aer RGB 2 vont assurer un débit d'air optimal et apporteront de la couleur à votre boitier. Ils vont s'intégrer au système HUE 2 pour une personnalisation avancée. Vous aurez la possibilité de connecter jusqu'à 5 ventilateurs par canal ou de combiner avec tout accessoire HUE 2.</p>
-						      <h1 class="price">39€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-						  
-						 <div class="column">
-						   	<img src="img/refroid/thermal.png">
-						    <div class="card">
-						      <h3>Thermaltake Pure 20 ARGB</h3>
-						      <p>Le Thermaltake Pure 20 ARGB est un ventilateur pour boîtier permettant d'apporter un design personnalisable à votre boitier sans sacrifier les performances en matière de refroidissement. Chaque ventilateur dispose de LEDs adressables sur 16.8 millions de couleurs.</p>
-						      <h1 class="price">54€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-
-						   <div class="column">
-						   	<img src="img/refroid/corsair.png">
-						    <div class="card">
-						      <h3>Corsair SP120 RGB PRO (x3) et Ligthing Node CORE</h3>
-						      <p>Obtenez un refroidissement très efficace de votre boîtier grâce aux ventilateurs Corsair Corsair SP120 RGB PRO. Ces ventilateurs Corsair de 120 mm sauront vous offrir un flux d'air sous haute pression ultra efficace.</p>
-						      <h1 class="price">64€<sup class="cent">94</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+					<div class="column">
+						<img src="<?= $row['imgsource']; ?>">
+						<div class="card">
+							<h1><?= $row['marques_pro']; ?></h1>
+							<p><?= $row['description']; ?></p>
+							<h1><?= $row['prix_pro']; ?>€</h1><br>
 
 
-
+							<?php
+							if (isset($_SESSION['userName'])) {
+							?>
+								<form method="POST" action="ventil.php">
+									<input type="hidden" name="num_pro" value="<?= $row['num_pro']; ?>">
+									<div class="boxBtnForPanier">
+										<p><button type="submit" class="btnbasket" name="addProduct">Ajouter au panier</button></p>
+										<input type="number" value="1" name="quantite" min="1" max="999" size="2" class="btnQte">
+									</div>
+								</form>
+							<?php
+							} else echo '<a href="connect.php"><button type="button">Ajouter au panier</button></a>';
+							?>
+						</div>
+					</div>
+				<?php
+				}
+				?>
 			</div>
 	<!-- 
 	https://www.ldlc.com/fr-be/fiche/PB00151988.php

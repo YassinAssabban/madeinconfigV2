@@ -1,3 +1,34 @@
+<?php session_start();
+require_once 'config.php';
+
+
+$proco = $bdd->query("SELECT * FROM produits WHERE category = 13");
+
+$sql = $bdd->query("SELECT * FROM produits ORDER BY num_pro ");
+
+
+
+
+if (isset($_POST['addProduct'])) {
+	$verifExist = $bdd->prepare("SELECT * FROM panier WHERE id_cli = ? AND num_pro = ?");
+	$verifExist->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	$verifProduits = $verifExist->fetch();
+	$rowPanier = $verifExist->rowCount();
+	if ($rowPanier == 0) {
+		if (isset($_POST['num_pro'])) {
+			$ajout = $bdd->prepare("INSERT INTO panier(id_cli,num_pro, qte_pro) VALUES(?, ?, ?)");
+			$ajout->execute(array($_SESSION['userID'], $_POST['num_pro'], $_POST['quantite']));
+			//print $bdd->lastInsertId();
+		}
+	} else {
+		$newQte = $verifProduits['qte_pro'] += $_POST['quantite'];
+		$addQte = $bdd->prepare("UPDATE panier SET qte_pro = $newQte WHERE id_cli = ? AND num_pro = ?");
+		$addQte->execute(array($_SESSION['userID'], $_POST['num_pro']));
+	}
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -83,8 +114,7 @@
 							</div>
 						</div>
 						<?php
-									session_start();
-
+									
 									if(empty($_SESSION['userName'])) {
 										echo "
 										<div class=\"connect\"><a href=\"signUp.php\">Sign Up</a></div>
@@ -108,47 +138,36 @@
 		</nav>
 	</header>
    <div class="row">
-						  
-						  <div class="column">
-						  	<img src="img/alim/bequiet550.png">
-						    <div class="card">
-						      <h3>be quiet! Straight Power 11 550W 80PLUS Platinum</h3>
-						      <br>
-						      <p>L'alimentation modulaire be quiet! Straight Power 11 Platinum offre un fonctionnement silencieux sans compromis au niveau de la qualité. Certifiée 80PLUS Platinum, elle offre un très haut rendement énergétique. Un choix idéal pour les configurations silencieuses et les configurations gaming. 
-						      </p>
-						      <h1 class="price">128€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+   <?php
+				while ($row = $proco->fetch()) {
+				?>
 
-						   <div class="column">
-						   	<img src="img/alim/bequiet650.png">
-						    <div class="card">
-						      <h3>be quiet! Straight Power 11 650W 80PLUS Platinum</h3>
-						      <br>
-						      <p>L'alimentation modulaire be quiet! Straight Power 11 Platinum offre un fonctionnement silencieux sans compromis au niveau de la qualité. Certifiée 80PLUS Platinum, elle offre un très haut rendement énergétique. Un choix idéal pour les configurations silencieuses et les configurations gaming.</p>
-						      <h1 class="price">149€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
-						  
-						  <div class="column">
-						   	<img src="img/alim/bequiet750.png">
-						    <div class="card">
-						      <h3>be quiet! Straight Power 11 750W 80PLUS Platinum</h3>
-						      <br>
-						      <p>L'alimentation modulaire be quiet! Straight Power 11 Platinum offre un fonctionnement silencieux sans compromis au niveau de la qualité. Certifiée 80PLUS Platinum, elle offre un très haut rendement énergétique. Un choix idéal pour les configurations silencieuses et les configurations gaming.</p>
-						      <h1 class="price">161€<sup class="cent">95</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+					<div class="column">
+						<img src="<?= $row['imgsource']; ?>">
+						<div class="card">
+							<h1><?= $row['marques_pro']; ?></h1>
+							<p><?= $row['description']; ?></p>
+							<h1><?= $row['prix_pro']; ?>€</h1><br>
 
-						  <div class="column">
-						   	<img src="img/alim/bequiet850.png">
-						    <div class="card">
-						      <h3>be quiet! Straight Power 11 850W 80PLUS Platinum</h3>
-						      <br>
-						      <p>L'alimentation modulaire be quiet! Straight Power 11 Platinum offre un fonctionnement silencieux sans compromis au niveau de la qualité. Certifiée 80PLUS Platinum, elle offre un très haut rendement énergétique. Un choix idéal pour les configurations silencieuses et les configurations gaming.</p>
-						      <h1 class="price">184€<sup class="cent">94</sup></h1><br>
-						      <input type="button" class="btnbasket" name="#" value="        AJOUTER AU PANIER  ">						    </div>
-						  </div>
+
+							<?php
+							if (isset($_SESSION['userName'])) {
+							?>
+								<form method="POST" action="bequietalim.php">
+									<input type="hidden" name="num_pro" value="<?= $row['num_pro']; ?>">
+									<div class="boxBtnForPanier">
+										<p><button type="submit" class="btnbasket" name="addProduct">Ajouter au panier</button></p>
+										<input type="number" value="1" name="quantite" min="1" max="999" size="2" class="btnQte">
+									</div>
+								</form>
+							<?php
+							} else echo '<a href="connect.php"><button type="button">Ajouter au panier</button></a>';
+							?>
+						</div>
+					</div>
+				<?php
+				}
+				?>
 
 
 			</div>

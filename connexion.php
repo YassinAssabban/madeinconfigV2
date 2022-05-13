@@ -20,7 +20,7 @@
                 //if($data['password'] === $password) {
 
                     $_SESSION['userName'] = $data['pseudo'];
-                    $_SESSION['userID'] = $data['id_cli'];  
+                    $_SESSION['userID'] = $data['id_cli'];
                     header('Location:landing.php');
 
                 }else header('Location:connect.php?login_err=password');

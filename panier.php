@@ -13,6 +13,13 @@ $verifClient->execute(array($_SESSION['userID']));
 $clientInfo = $verifClient->fetch();
 
 
+
+if (isset($_POST['suppProduit'])) {
+    $supp = $bdd->prepare("DELETE FROM panier WHERE id_cli = ?");
+    $supp->execute(array($_SESSION['userID']));
+}
+
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -47,37 +54,43 @@ $clientInfo = $verifClient->fetch();
             <th>Prix Total</th>
         </tr>
         <?php
-
+        $total = 0;
         while ($row = $toPanier->fetch()) {
             $recProduits = $bdd->prepare("SELECT * FROM produits WHERE num_pro = ?");
             $recProduits->execute(array($row['num_pro']));
             $infoProduits = $recProduits->fetch();
 
+            $requetProduit = $bdd->prepare("SELECT * FROM produits WHERE num_pro = ? ");
+            $requetProduit->execute(array($row['num_pro']));
+            $requetePanier = $bdd->prepare("SELECT * FROM panier WHERE id_cli = ? AND num_pro = ?");
+            $requetePanier->execute(array($_SESSION['userID'], $row['num_pro']));
+
+            $fetchRequeteProduit = $requetProduit->fetch();
+            $fetchRequetePanier = $requetePanier->fetch();
+
+            $prixTotalParProduit = $fetchRequeteProduit['prix_pro'] * $fetchRequetePanier['qte_pro'];
+            $prixTotalParProduitFormat = number_format($prixTotalParProduit, 2, ".");
+
+            
+            $total += $prixTotalParProduitFormat;
         ?>
             <tr>
                 <form method="POST" action="panier.php">
-                    <input type="hidden" name="idpanier" value="$row['id_panier'];">
                     <td><button class="btnSuppProd" type="submit" name="suppProduit"><i class="fa fa-close"></i></button></td>
                 </form>
                 <td><?= $infoProduits['marques_pro']; ?></td>
                 <td><?= $row['qte_pro']; ?></td>
                 <td><?= $infoProduits['prix_pro']; ?>€</td>
+                <td><?=  $prixTotalParProduitFormat ?></td>
             </tr>
         <?php
-            $rowIdPanier = $row['id_panier'];
-        
-                if (isset($_POST['suppProduit'])) {
-                    $supp = $bdd->prepare("DELETE FROM panier WHERE id_panier = $rowIdPanier");
-                    $supp->execute(array($_SESSION['userID']));
-                }
-
         }
         ?>
         <tr>
             <td colspan="4" class="borderGreenTop">
                 <h3>Total :</h3>
             </td>
-            <td class="borderGreenTop"><span class="price" style="color:black"><b> €</b></span></td>
+            <td class="borderGreenTop"><span class="price" style="color:black"><b> <?= $total ?>€</b></span></td>
         </tr>
     </table>
 

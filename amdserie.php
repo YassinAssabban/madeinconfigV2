@@ -18,7 +18,8 @@ if (isset($_POST['addProduct'])) {
 		if (isset($_POST['num_pro'])) {
 			$ajout = $bdd->prepare("INSERT INTO panier(id_cli,num_pro, qte_pro) VALUES(?, ?, ?)");
 			$ajout->execute(array($_SESSION['userID'], $_POST['num_pro'], $_POST['quantite']));
-			//print $bdd->lastInsertId();
+
+			//$_SESSION['idpanier'] = $bdd->lastInsertId();
 		}
 	} else {
 		$newQte = $verifProduits['qte_pro'] += $_POST['quantite'];

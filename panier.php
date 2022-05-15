@@ -12,13 +12,10 @@ $verifClient = $bdd->prepare("SELECT * FROM clients WHERE id_cli = ?");
 $verifClient->execute(array($_SESSION['userID']));
 $clientInfo = $verifClient->fetch();
 
-
-
 if (isset($_POST['suppProduit'])) {
-    $supp = $bdd->prepare("DELETE FROM panier WHERE id_cli = ?");
-    $supp->execute(array($_SESSION['userID']));
+    $supp = $bdd->prepare("DELETE FROM panier WHERE id_cli = ?/* AND id_panier = ?*/");
+    $supp->execute(array($_SESSION['userID']/*, $_SESSION['idpanier']*/));
 }
-
 
 ?>
 <!DOCTYPE html>
@@ -53,6 +50,7 @@ if (isset($_POST['suppProduit'])) {
             <th>Prix Total</th>
         </tr>
         <?php
+        $totalFormat = 0;
         $total = 0;
         while ($row = $toPanier->fetch()) {
             $recProduits = $bdd->prepare("SELECT * FROM produits WHERE num_pro = ?");
@@ -70,9 +68,10 @@ if (isset($_POST['suppProduit'])) {
             $prixTotalParProduit = $fetchRequeteProduit['prix_pro'] * $fetchRequetePanier['qte_pro'];
             $prixTotalParProduitFormat = number_format($prixTotalParProduit, 2);
 
-
-            $total = $total + $prixTotalParProduitFormat;
+            $total = $total + $prixTotalParProduit;
             $totalFormat = number_format($total, 2);
+
+
         ?>
             <tr>
                 <form method="POST" action="panier.php">

@@ -130,8 +130,8 @@ if (isset($_POST['addProduct'])) {
 				?>
 
 				<div class="search-container">
-					<form action="/action_page.php">
-						<input type="text" placeholder="Search.." name="search">
+					<form action="amdserie.php">
+						<input type="text" placeholder="Rechercher.." name="search">
 						<button type="submit"><i class="fa fa-search"></i></button>
 					</form>
 				</div>

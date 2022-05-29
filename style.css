@@ -657,6 +657,10 @@ span.psw {
 {
 	min-height: 100%;
 }
+.pousse-footerProfile
+{
+	min-height: 69.6%;
+}
 
 /* news */
 .bgimg-1, .bgimg-2, .bgimg-3, .bgimg-4 {
@@ -666,10 +670,7 @@ span.psw {
   background-size: cover;
 
 }
-.bgimg-1 {
-  background-image: url(img/fond2.png);
-  min-height: 100%;
-}
+
 
 .bgimg-2 {
   background-image: url(img/fond1.png);
@@ -689,7 +690,9 @@ h3.titre-news {
   letter-spacing: 5px;
   text-transform: uppercase;
   font: 20px "Lato", sans-serif;
-  color: #111;
+  color: rgb(195, 175, 175);
+  text-align: center;
+  justify-content: center;
 }
 .sign{
 	display: flex;
@@ -713,6 +716,16 @@ h3.titre-news {
 }
 
 /* ------------------------------PANIER---------------------------------- */
+.panier .badge {
+	position: absolute;
+	top: 1%;
+	right: 2%;
+	padding: 4px 8px;
+	border-radius: 50%;
+	background-color: red;
+	color: white;
+  }
+
 th {
 	border-bottom: 2px solid #137E1A;
 }
@@ -744,3 +757,20 @@ td.borderGreenTop {
 	border: 1px solid #137E1A;
   }
 
+/*            PROFILE                 */
+
+.profile{
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	justify-content: center;
+	align-items: center;
+}
+
+.profileEmail{
+	font-size: 30px;
+}
+
+.profilePseudo{
+	font-size: 30px;
+}

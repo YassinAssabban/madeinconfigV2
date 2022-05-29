@@ -75,6 +75,9 @@ require_once 'config.php';
                     <td><button class="btnSuppProd" type="submit" name="deleteItem" value="<?php echo $row['id_panier']; ?>"><i class="fa fa-close"></i></button></td>
                 </form>
                 <td><?= $infoProduits['marques_pro']; ?></td>
+                <!-- <td><form method="POST" action="panier.php">
+                <input type="number" value="<?php echo $row['qte_pro']?>" name="quantite" min="1" max="999" size="2" class="btnQte">
+                </form></td> -->
                 <td><?= $row['qte_pro']; ?></td>
                 <td><?= $infoProduits['prix_pro']; ?>€</td>
                 <td><?= $prixTotalParProduitFormat; ?>€</td>

@@ -21,6 +21,7 @@
 
                     $_SESSION['userName'] = $data['pseudo'];
                     $_SESSION['userID'] = $data['id_cli'];
+                    $_SESSION['userEmail'] = $data['email'];
                     header('Location:landing.php');
 
                 }else header('Location:connect.php?login_err=password');

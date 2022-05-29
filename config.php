@@ -1,6 +1,6 @@
 <?php
 $user = 'root';
-$pass = 'root';
+$pass = '';
 
 try
 {
@@ -13,3 +13,4 @@ catch (Exception $e)
 }
 
 ?>
+

@@ -13,11 +13,9 @@
                   <a href="panier.php" class="panier"><img src="logo/basket.png" width="40px" height="40px"></a>
                 </div>
 
-<div class="bgimg-1">
-</div>
 
-<div style="color: #777;background-color:white;text-align:center;padding:50px 80px;text-align: justify;">
-  <h3 class="titre-news" style="text-align:center;">Made In Config recrute</h3>
+<div style="color: #ddd;background-color:#282E34;text-align:center;padding:50px 80px;text-align: justify;">
+  <h3 class="titre-news">Made In Config recrute</h3>
   <p>En tant que vendeur - magasinier (H/F), vous êtes en charge de : Accueil et gestion de la clientèle (magasin, téléphone, e-mail ...)Garantir la réception et le contrôle des marchandises Préparation des commandes Rangement du magasin et des endroits de stockage Vous êtes orienté client Vous avez la fibre commerciale Vous avez obligatoirement des connaissances en mécanique Des connaissances en allemand sont un sérieux atout Une mission intérim en vue d’un contrat à durée indéterminée Un salaire attractif en fonction de vos compétences Une ambiance de travaille dynamique et agréable Vous travaillez dans une entreprise familiale qui propose des formations en continue</p>
 </div>
  

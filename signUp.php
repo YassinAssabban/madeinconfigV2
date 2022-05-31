@@ -160,7 +160,6 @@ body{
         <div class="container signin">
           <p>Déja un compte? <a href="connect.php">Sign in</a>.</p>
         </div>
-
       </form>
 <div class="pousse-footer"></div>
 <footer>

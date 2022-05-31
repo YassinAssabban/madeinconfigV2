@@ -1,5 +1,7 @@
 <?php
+// Initialisation des données de sessions
 session_start();
+// Vérifie si l'utilisateur est connecté (Y = On affiche la page du panier | N = On affiche la page pour se connecter)
 if (!isset($_SESSION['userName']))
     header("Location:connect.php");
 
@@ -39,14 +41,16 @@ require_once 'config.php';
             <th>Prix Total</th>
         </tr>
         <?php
-
+        // Préparation et éxecution de la requête qui permet de récupérer le contenu de la table PANIER la ou l'id client correspond au client connecté actuellement
         $toPanier = $bdd->prepare("SELECT * FROM panier WHERE id_cli = ?");
         $toPanier->execute(array($_SESSION['userID']));
 
+        // Préparation et éxecution de la requête qui permet de récupérer le contenu de la table CLIENTS la ou l'id client correspond au client connecté actuellement
         $verifClient = $bdd->prepare("SELECT * FROM clients WHERE id_cli = ?");
         $verifClient->execute(array($_SESSION['userID']));
         $clientInfo = $verifClient->fetch();
 
+        // Préparation et éxecution de la requête qui permet de supprimer le contenu de la table PANIER la ou l'id panier correspond a l'id_panier renvoyé par le formulaire dans $_POST['deleteItem']
         if (isset($_POST['deleteItem'])) {
             $supp = $bdd->prepare("DELETE FROM panier WHERE id_panier = ?");
             $supp->execute(array($_POST['deleteItem']));
@@ -55,15 +59,21 @@ require_once 'config.php';
 
         $totalFormat = 0;
         $total = 0;
+
+
+        // On récupère dans le tableau $row chaque ligne lié a la requête toPanier
         while ($row = $toPanier->fetch()) {
 
+            // Préparation et éxecution de la requête qui permet de récupérer le contenu de la table produits la ou le num_pro correspond au numéro de produit de la ligne du tableau $row
             $recProduits = $bdd->prepare("SELECT * FROM produits WHERE num_pro = ?");
             $recProduits->execute(array($row['num_pro']));
             $infoProduits = $recProduits->fetch();
 
+            // calcul du prix total pour chaque article si il a été prix plusieurs fois
             $prixTotalParProduit = $infoProduits['prix_pro'] * $row['qte_pro'];
             $prixTotalParProduitFormat = number_format($prixTotalParProduit, 2);
 
+            // calcul du prix total du panier 
             $total = $total + $prixTotalParProduit;
             $totalFormat = number_format($total, 2);
 

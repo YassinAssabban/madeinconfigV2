@@ -1,15 +1,19 @@
 <div class="row">
 
     <?php
+
+    $proco = $bdd->prepare("SELECT * FROM produits WHERE category = ?");
+    $proco->execute(array($_POST['choiceMenu']));
+
     while ($row = $proco->fetch()) {
     ?>
 
         <div class="column">
-            <img src="<?= $row['imgsource']; ?>">
+            <img style="width: 315px;" src="<?= $row['imgsource']; ?>">
             <div class="card">
-                <h1><?= $row['marques_pro']; ?></h1>
-                <p><?= $row['description']; ?></p>
-                <h1><?= $row['prix_pro']; ?>€</h1><br>
+                <h2><?= $row['marques_pro']; ?></h2>
+                <p class="textSizeDesc"><?= $row['description']; ?></p>
+                <h2><?= $row['prix_pro']; ?>€</h2><br>
 
 
                 <?php

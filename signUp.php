@@ -162,6 +162,7 @@ body{
         </div>
       </form>
 <div class="pousse-footer"></div>
+<!-- https://www.youtube.com/watch?v=jEgzxXCB9-w&t=538s&ab_channel=NoS1gnal-->
 <footer>
                     <p>Copyright © Made In Config. Inc.</p>
                     <p>Créé par Yassin Assabban dans le cadre d'études d'IG à la l'HELHa.</p>

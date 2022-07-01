@@ -8,7 +8,7 @@
         $password = $_POST['password'];
 
         // Préparation et éxecution de la requête qui permet de récupérer le contenu de la table CLIENTS la ou l'email du client correspond a l'email entrée dans le formulaire de connexion
-        $check = $bdd->prepare('SELECT pseudo, email, id_cli, password FROM clients WHERE email = ?');
+        $check = $bdd->prepare('SELECT pseudo, email, id_cli, role, nom_cli, prenom_cli, password FROM clients WHERE email = ?');
         $check->execute(array($email));
 
         // $data contient tous le contenu récupérer dans la requête du dessus
@@ -26,6 +26,9 @@
                     $_SESSION['userName'] = $data['pseudo'];
                     $_SESSION['userID'] = $data['id_cli'];
                     $_SESSION['userEmail'] = $data['email'];
+                    $_SESSION['role'] = $data['role'];
+                    $_SESSION['userSurname'] = $data['nom_cli'];
+                    $_SESSION['userFirstname'] = $data['prenom_cli'];
                     header('Location:landing.php');
 
                 }else header('Location:connect.php?login_err=password');
@@ -33,3 +36,4 @@
         }else header('Location:connect.php?login_err=already');
     }
 ?>
+<!-- https://www.youtube.com/watch?v=jEgzxXCB9-w&t=538s&ab_channel=NoS1gnal-->

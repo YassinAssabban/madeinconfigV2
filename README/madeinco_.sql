@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : dim. 29 mai 2022 à 18:57
+-- Généré le : lun. 30 mai 2022 à 14:42
 -- Version du serveur : 10.4.22-MariaDB
 -- Version de PHP : 8.1.2
 
@@ -141,7 +141,8 @@ INSERT INTO `panier` (`num_pro`, `id_cli`, `qte_pro`, `datePanier`, `id_panier`)
 (64, 19, 2, '2022-05-29 18:48:30', 87),
 (61, 19, 2, '2022-05-29 18:48:32', 88),
 (78, 19, 1, '2022-05-29 18:48:57', 89),
-(92, 19, 1, '2022-05-29 18:49:22', 90);
+(92, 19, 1, '2022-05-29 18:49:22', 90),
+(34, 16, 12, '2022-05-30 14:41:11', 97);
 
 -- --------------------------------------------------------
 
@@ -319,7 +320,7 @@ ALTER TABLE `clients`
 -- AUTO_INCREMENT pour la table `panier`
 --
 ALTER TABLE `panier`
-  MODIFY `id_panier` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
+  MODIFY `id_panier` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
 
 --
 -- AUTO_INCREMENT pour la table `produits`
@@ -335,7 +336,7 @@ ALTER TABLE `produits`
 -- Contraintes pour la table `clients`
 --
 ALTER TABLE `clients`
-  ADD CONSTRAINT `commande` FOREIGN KEY (`id_cli`) REFERENCES `produits` (`num_pro`);
+  ADD CONSTRAINT `commande` FOREIGN KEY (`id_cli`) REFERENCES `panier` (`id_panier`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

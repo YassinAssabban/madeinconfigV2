@@ -55,3 +55,4 @@
         }else header('Location: signUp.php?reg_err=already');
     }
     ?>
+<!-- https://www.youtube.com/watch?v=jEgzxXCB9-w&t=538s&ab_channel=NoS1gnal-->

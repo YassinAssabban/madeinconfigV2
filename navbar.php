@@ -91,10 +91,8 @@
                                                 <div class=\"connect\"><a href=\"signUp.php\">Sign Up</a></div>
                                                 <div class=\"connect\"><a href=\"connect.php\">Sign In</a></div> ";
                 } else {
-                    $sess = $_SESSION['userName'];
-                    echo "<div class=\"connect\"><a href=\"profil.php\">Bonjour ";
-                    echo "$sess";
-                    echo " !</a></div> <div class=\"connect\"><a href=\"deconnexion.php\">Deconnexion</a></div>";
+                    echo "<div class=\"connect\"><a href=\"profil.php\">Mon compte";
+                    echo "</a></div> <div class=\"connect\"><a href=\"deconnexion.php\">Deconnexion</a></div>";
                 }
 
                 ?>

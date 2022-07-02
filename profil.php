@@ -105,7 +105,7 @@ require_once 'config.php'; ?>
 
 
 
-        <!-- <div class="box-profile-right-info">
+        <div class="box-profile-right-info">
             <div class="profileTitle">
                 <h2>MES INFORMATIONS</h2>
             </div>
@@ -133,11 +133,11 @@ require_once 'config.php'; ?>
                         <input type="submit" value="VALIDER">
                     </div>
             </form>
-        </div> -->
-
+        </div>
+<!-- 
         <div class="box-profile-panel">
             
-        </div>
+        </div> -->
 
 
     </div>

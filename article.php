@@ -1,6 +1,10 @@
 <?php session_start();
 require_once 'config.php';
 
+    $categoryExist = $bdd->prepare("SELECT * FROM category WHERE id_category = ?");
+    $categoryExist->execute(array($_POST['choiceMenu']));
+    $categoryData = $categoryExist->fetch();
+
 
 
 if (isset($_POST['addProduct'])) {
@@ -25,7 +29,7 @@ if (isset($_POST['addProduct'])) {
 <html lang="fr">
 
 <head>
-    <title>AMD serie</title>
+    <title><?php echo $categoryData['name_category']; ?></title>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="icon" type="image/png" href="logo/monitor.png" />
@@ -33,21 +37,18 @@ if (isset($_POST['addProduct'])) {
 </head>
 <?php require_once 'navbar.php'; ?>
 <body>
-<div class="row">
 <?php require_once 'affichageArticles.php'; ?>
 
-    <!--
-    https://www.ldlc.com/fr-be/fiche/PB00273788.php
-    https://www.ldlc.com/fr-be/fiche/PB00273573.php
-    https://www.ldlc.com/fr-be/fiche/PB00273568.php
-    https://www.ldlc.com/fr-be/fiche/PB00273570.php
+        <!--
+    https://www.ldlc.com/fr-be/
+    https://www.w3schools.com/
 -->
-    <footer>
-        <p>Copyright © Made In Config. Inc.</p>
-        <p>Créé par Yassin Assabban dans le cadre d'études d'IG à la l'HELHa.</p>
-        <p>Attention toutes les informations de ce site web sont fausses rien n'est à vendre ici.</p>
-        <p>Toute reproduction même partielle de ce site web ou de son contenu est strictement interdite.</p>
-    </footer>
+        <footer>
+            <p>Copyright © Made In Config. Inc.</p>
+            <p>Créé par Yassin Assabban dans le cadre d'études d'IG à la l'HELHa.</p>
+            <p>Attention toutes les informations de ce site web sont fausses rien n'est à vendre ici.</p>
+            <p>Toute reproduction même partielle de ce site web ou de son contenu est strictement interdite.</p>
+        </footer>
 </body>
 
 </html>

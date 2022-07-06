@@ -21,6 +21,7 @@
                 if (isset($_SESSION['userName'])) {
                 ?>
                     <form method="POST" action="<?php $_SERVER['PHP_SELF']; ?>">
+                        <input type="hidden" name="choiceMenu" value="<?= $_POST['choiceMenu']; ?>">
                         <input type="hidden" name="num_pro" value="<?= $row['num_pro']; ?>">
                         <p><button type="submit" class="btnbasket" name="addProduct">Ajouter au panier</button></p>
                         <input type="number" value="1" name="quantite" min="1" max="999" size="3">

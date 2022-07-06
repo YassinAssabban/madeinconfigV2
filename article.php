@@ -1,6 +1,7 @@
 <?php session_start();
 require_once 'config.php';
 
+  
     $categoryExist = $bdd->prepare("SELECT * FROM category WHERE id_category = ?");
     $categoryExist->execute(array($_POST['choiceMenu']));
     $categoryData = $categoryExist->fetch();

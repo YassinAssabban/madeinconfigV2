@@ -10,11 +10,11 @@
     ?>
 
         <div class="column">
-            <img src="<?= $row['imgsource']; ?>">
+            <div class="productImage"><img src="<?= $row['imgsource']; ?>"></div>
             <div class="card">
-                <h2><?= $row['marques_pro']; ?></h2>
+                <h2 class="textSizeproductname"><?= $row['marques_pro']; ?></h2>
                 <p class="textSizeDesc"><?= $row['description']; ?></p>
-                <h2><?= $row['prix_pro']; ?>€</h2><br>
+                <h2 class="textSizeprice"><?= $row['prix_pro']; ?>€</h2><br>
 
 
                 <?php

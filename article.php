@@ -44,6 +44,7 @@ if (isset($_POST['addProduct'])) {
     https://www.ldlc.com/fr-be/
     https://www.w3schools.com/
 -->
+<div class="pousse-footer"></div>
         <footer>
             <p>Copyright © Made In Config. Inc.</p>
             <p>Créé par Yassin Assabban dans le cadre d'études d'IG à la l'HELHa.</p>

@@ -1,9 +1,8 @@
 <div class="row">
 
     <?php
-
-            $proco = $bdd->prepare("SELECT * FROM produits WHERE category = ?");
-            $proco->execute(array($_POST['choiceMenu']));
+        $proco = $bdd->prepare("SELECT * FROM produits WHERE category = ?");
+        $proco->execute(array($_POST['choiceMenu']));
 
 
     while ($row = $proco->fetch()) {

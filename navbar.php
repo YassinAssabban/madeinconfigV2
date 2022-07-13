@@ -23,9 +23,9 @@
                 <a href="index.php">Accueil</a>
                 <a href="news.php">News</a>
                 <div class="dropdown">
-                    <button class="dropbtn">Composants
+                    <div class="dropbtn">Composants
                         <i class="fa fa-caret-down"></i>
-                    </button>
+                    </div>
                     <div class="dropdown-content">
                         <div class="header">
                             <h2>Composants</h2>
@@ -58,9 +58,9 @@
                     </div>
                 </div>
                 <div class="dropdown">
-                    <button class="dropbtn">Produits
+                    <div class="dropbtn">Produits
                         <i class="fa fa-caret-down"></i>
-                    </button>
+                    </div>
                     <div class="dropdown-content">
                         <div class="header">
                             <h2>Produits</h2>

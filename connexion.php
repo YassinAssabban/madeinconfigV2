@@ -29,7 +29,7 @@
                     $_SESSION['role'] = $data['role'];
                     $_SESSION['userSurname'] = $data['nom_cli'];
                     $_SESSION['userFirstname'] = $data['prenom_cli'];
-                    header('Location:landing.php');
+                    header('Location:index.php');
 
                 }else header('Location:connect.php?login_err=password');
             }else header('Location:connect.php?login_err=email');

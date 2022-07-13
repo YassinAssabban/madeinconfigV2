@@ -54,6 +54,7 @@ require_once 'config.php';
         if (isset($_POST['deleteItem'])) {
             $supp = $bdd->prepare("DELETE FROM panier WHERE id_panier = ?");
             $supp->execute(array($_POST['deleteItem']));
+            header('Location:panier.php');
         }
         
 
@@ -79,7 +80,6 @@ require_once 'config.php';
 
 
         ?>
-        
             <tr>
                 <form method="POST" action="panier.php">
                     <td><button class="btnSuppProd" type="submit" name="deleteItem" value="<?php echo $row['id_panier']; ?>"><i class="fa fa-close"></i></button></td>

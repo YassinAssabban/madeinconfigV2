@@ -4,7 +4,7 @@ $pass = '';
 
 try
 {
-    $bdd = new PDO('mysql:host=localhost;dbname=madeinco_;charset=utf8', $user, $pass);
+    $bdd = new PDO('mysql:host=localhost;dbname=assabban;charset=utf8', $user, $pass);
     $bdd->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 }
 catch (Exception $e)

@@ -1,3 +1,47 @@
+<?php
+session_start();
+require_once 'config.php';
+
+if (isset($_POST['email']) && isset($_POST['password'])) {
+	$email = $_POST['email'];
+	$password = $_POST['password'];
+
+	// Préparation et éxecution de la requête qui permet de récupérer le contenu de la table CLIENTS la ou l'email du client correspond a l'email entrée dans le formulaire de connexion
+	$check = $bdd->prepare('SELECT pseudo, email, id_cli, role, nom_cli, prenom_cli, password FROM clients WHERE email = ?');
+	$check->execute(array($email));
+
+	// $data contient tous le contenu récupérer dans la requête du dessus
+	$data = $check->fetch();
+	$row = $check->rowCount();
+
+	// vérification si le client existe déja
+	if ($row == 1) {
+		if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+			//$password = password_hash($password, PASSWORD_DEFAULT);
+			if (password_verify($password, $data['password'])) {
+				//if($data['password'] === $password) {
+
+				$_SESSION['userName'] = $data['pseudo'];
+				$_SESSION['userID'] = $data['id_cli'];
+				$_SESSION['userEmail'] = $data['email'];
+				$_SESSION['role'] = $data['role'];
+				$_SESSION['userSurname'] = $data['nom_cli'];
+				$_SESSION['userFirstname'] = $data['prenom_cli'];
+				header('Location:index.php');
+			} else {
+				$messageErreur = '<div class="alert alert-danger">
+					<strong>Erreur</strong> mot de passe incorrect</div>';
+			}
+		} else {
+			$messageErreur = '<div class="alert alert-danger">
+				<strong>Erreur</strong> Email incorrect</div>';
+		}
+	} else {
+		$messageErreur = '<div class="alert alert-danger">
+			<strong>Erreur</strong> compte non existant</div>';
+	}
+}
+?>
 <!DOCTYPE html>
 <html>
 
@@ -5,7 +49,7 @@
 	<title>Connexion</title>
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="style.css">
-	<link rel="icon" type="image/png" href="logo/monitor.png" />
+	<link rel="icon" type="image/png" href="img/monitor.png" />
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -83,64 +127,16 @@
 <body>
 	<header>
 		<div class="lisere">
-			<a href="index.php"><img src="logo/logo2.png" class="logolis"></a>
+			<a href="index.php"><img src="img/logo2.png" class="logolis"></a>
 		</div>
 	</header>
 	<?php
-	// if (isset($_GET['login_err'])) {
-	// 	$err = $_GET['login_err'];
+	if (isset($messageErreur)) {
+		echo $messageErreur;
+	}
 
-	// 	switch ($err) {
-	// 		case 'password':
-	// 			
 	?>
-	<!-- <div class="alert alert-danger">
-			 					<strong>Erreur</strong> mot de passe incorrect
-			 				</div> -->
-	<?php
-	// 			break;
-
-	// 			case 'email':
-	// 			
-	?>
-	<!-- // 				<div class="alert alert-danger">
-			// 					<strong>Erreur</strong> Email incorrect
-			// 				</div> -->
-	<?php
-	// 		break;
-
-	// 		case 'already':
-	// 		
-	?>
-	<!-- // 				<div class="alert alert-danger">
-			// 					<strong>Erreur</strong> compte non existant
-			// 				</div> -->
-	<?php
-	// 		break;
-	// 	}
-	// }
-
-	if (isset($_GET['login_err'])) {
-		$err = $_GET['login_err'];
-
-		if ($err = 'password') { ?>
-			<div class="alert alert-danger">
-				<strong>Erreur</strong> mot de passe incorrect
-			</div><?php
-		} elseif ($err = 'email') { ?>
-			<div class="alert alert-danger">
-				<strong>Erreur</strong> Email incorrect
-			</div><?php
-				} elseif ($err = 'already') { ?>
-			<div class="alert alert-danger">
-				<strong>Erreur</strong> compte non existant
-			</div><?php
-				}
-			}
-
-
-					?>
-	<form action="connexion.php" method="post">
+	<form action="<?php $_SERVER['PHP_SELF']; ?>" method="post">
 		<div class="container">
 			<h1>Se connecter</h1>
 			<hr>
@@ -174,4 +170,4 @@
 </body>
 
 </html>
-<!-- https://www.youtube.com/watch?v=jEgzxXCB9-w&t=538s&ab_channel=NoS1gnal-->
+<!-- inspiré par ceci https://www.youtube.com/watch?v=jEgzxXCB9-w&t=538s&ab_channel=NoS1gnal-->

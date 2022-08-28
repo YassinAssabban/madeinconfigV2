@@ -15,13 +15,13 @@ require_once 'config.php';
     <title>Checkout Final</title>
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="style.css">
-    <link rel="icon" type="image/png" href="monitor.png" />
+    <link rel="icon" type="image/png" href="img/monitor.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <header>
     <div class="lisere">
-        <a href="index.php"><img src="logo/logo2.png" class="logolis"></a>
+        <a href="index.php"><img src="img/logo2.png" class="logolis"></a>
     </div>
 </header>
 
@@ -56,7 +56,17 @@ require_once 'config.php';
             $supp->execute(array($_POST['deleteItem']));
             header('Location:panier.php');
         }
-        
+
+
+        // ? REQUIRE COMMENTS ? //
+        if (isset($_POST['quantite']) && isset($_POST['idPanierForQte'])) {
+            $newQtePanier = $_POST['quantite'];
+            $idPanierForNewQte = $_POST['idPanierForQte'];
+            $upQte = $bdd->prepare("UPDATE panier SET qte_pro = $newQtePanier WHERE id_panier = ? AND id_cli = ?");
+            $upQte->execute(array($idPanierForNewQte, $_SESSION['userID']));
+            header('Location:panier.php');
+        }
+
 
         $totalFormat = 0;
         $total = 0;
@@ -86,9 +96,14 @@ require_once 'config.php';
                 </form>
                 <td><?= $infoProduits['marques_pro']; ?></td>
                 <!-- <td><form method="POST" action="panier.php">
-                <input type="number" value="<?php echo $row['qte_pro']?>" name="quantite" min="1" max="999" size="2" class="btnQte">
+                <input type="number" value="<?php echo $row['qte_pro'] ?>" name="quantite" min="1" max="999" size="2" class="btnQte">
                 </form></td> -->
-                <td><?= $row['qte_pro']; ?></td>
+                <td>
+                    <form method="POST" action="<?php $_SERVER['PHP_SELF']; ?>">
+                        <input type="number" value="<?= $row['qte_pro']; ?>" name="quantite" min="1" max="999" size="3">
+                        <input type="hidden" name="idPanierForQte" value="<?php echo $row['id_panier']; ?>">
+                    </form>
+                </td>
                 <td><?= $infoProduits['prix_pro']; ?>€</td>
                 <td><?= $prixTotalParProduitFormat; ?>€</td>
             </tr>

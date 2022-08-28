@@ -1,9 +1,9 @@
 <header>
     <div class="lisere">
-        <a href="index.php"><img src="logo/logo2.png" class="logolis"></a>
+        <a href="index.php"><img src="img/logo2.png" class="logolis"></a>
         <?php
         if (empty($_SESSION['userID'])) {
-            echo "<a href=\"panier.php\" class=\"panier\"><img src=\"logo/basket.png\" width=\"40px\" height=\"40px\"></a>";
+            echo "<a href=\"panier.php\" class=\"panier\"><img src=\"img/basket.png\" width=\"40px\" height=\"40px\"></a>";
         } else {
             $requeteTotalArticle = $bdd->prepare("SELECT count(*) FROM panier WHERE id_cli = ?");
             $requeteTotalArticle->execute(array($_SESSION['userID']));
@@ -11,7 +11,7 @@
 
             $totArt = $totalArticle[0];
         ?>
-            <a href="panier.php" class="panier"><img src="logo/basket.png" width="40px" height="40px"><span class="badge"><?php echo $totArt; ?></span></a>
+            <a href="panier.php" class="panier"><img src="img/basket.png" width="40px" height="40px"><span class="badge"><?php echo $totArt; ?></span></a>
         <?php }
 
         ?>
@@ -96,12 +96,6 @@
                 }
 
                 ?>
-                <div class="search-container">
-                    <form action="/action_page.php">
-                        <input type="text" placeholder="Search.." name="search">
-                        <button type="submit"><i class="fa fa-search"></i></button>
-                    </form>
-                </div>
             </div>
         </form>
     </nav>

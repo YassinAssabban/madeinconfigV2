@@ -1,0 +1,4 @@
+ADMIN
+
+email : admin@hotmail.fr
+mdp : ADMIN2022
